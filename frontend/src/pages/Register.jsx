@@ -1,3 +1,211 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+import api from "./components/context/services/api";
+
 export default function Register() {
-  return <h2>Register Page</h2>;
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const data = await api.register({ name: formData.name, email: formData.email, password: formData.password });
+      if (data.token) {
+        alert("Registration successful!");
+        navigate("/products");
+      } else {
+        setError(data.message || "Registration failed");
+      }
+    } catch (err) {
+      setError("Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      setError("");
+      
+      const response = await fetch('http://localhost:5000/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: credentialResponse.credential })
+      });
+
+      const data = await response.json();
+
+      if (data.token) {
+        localStorage.setItem('user', JSON.stringify(data));
+        const redirectPath = data.role === 'admin' ? '/admin' : '/products';
+        navigate(redirectPath, { replace: true });
+      } else {
+        setError(data.message || "Google sign-up failed");
+      }
+    } catch (err) {
+      console.error('Google sign-up error:', err);
+      setError("Google sign-up failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Google sign-up was cancelled or failed");
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #faf8f5 0%, #f5f0e8 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
+      <div style={{ maxWidth: "480px", width: "100%" }}>
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "48px", color: "#800020", marginBottom: "10px" }}>Join Thread Story</h1>
+          <p style={{ color: "#666", fontSize: "16px" }}>Create an account to start shopping</p>
+        </div>
+
+        {/* Form Card */}
+        <div style={{ backgroundColor: "white", borderRadius: "20px", boxShadow: "0 10px 40px rgba(0,0,0,0.1)", padding: "40px", border: "2px solid #e8d5c4" }}>
+          {error && (
+            <div style={{ backgroundColor: "#fee", border: "1px solid #fcc", color: "#c00", padding: "12px", borderRadius: "8px", marginBottom: "20px", fontSize: "14px" }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            {/* Name */}
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: "600", color: "#800020", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Full Name</label>
+              <input
+                name="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                style={{ width: "100%", padding: "14px 16px", border: "2px solid #e8d5c4", borderRadius: "10px", fontSize: "15px", transition: "all 0.3s ease" }}
+                placeholder="Your name"
+                onFocus={(e) => e.target.style.borderColor = "#d4af37"}
+                onBlur={(e) => e.target.style.borderColor = "#e8d5c4"}
+              />
+            </div>
+
+            {/* Email */}
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: "600", color: "#800020", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Email Address</label>
+              <input
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                style={{ width: "100%", padding: "14px 16px", border: "2px solid #e8d5c4", borderRadius: "10px", fontSize: "15px", transition: "all 0.3s ease" }}
+                placeholder="you@example.com"
+                onFocus={(e) => e.target.style.borderColor = "#d4af37"}
+                onBlur={(e) => e.target.style.borderColor = "#e8d5c4"}
+              />
+            </div>
+
+            {/* Password */}
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: "600", color: "#800020", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Password</label>
+              <input
+                name="password"
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                style={{ width: "100%", padding: "14px 16px", border: "2px solid #e8d5c4", borderRadius: "10px", fontSize: "15px", transition: "all 0.3s ease" }}
+                placeholder="••••••••"
+                onFocus={(e) => e.target.style.borderColor = "#d4af37"}
+                onBlur={(e) => e.target.style.borderColor = "#e8d5c4"}
+              />
+            </div>
+
+            {/* Confirm Password */}
+            <div style={{ marginBottom: "20px" }}>
+              <label style={{ display: "block", fontSize: "13px", fontWeight: "600", color: "#800020", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "1px" }}>Confirm Password</label>
+              <input
+                name="confirmPassword"
+                type="password"
+                required
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                style={{ width: "100%", padding: "14px 16px", border: "2px solid #e8d5c4", borderRadius: "10px", fontSize: "15px", transition: "all 0.3s ease" }}
+                placeholder="••••••••"
+                onFocus={(e) => e.target.style.borderColor = "#d4af37"}
+                onBlur={(e) => e.target.style.borderColor = "#e8d5c4"}
+              />
+            </div>
+
+            {/* Terms */}
+            <div style={{ display: "flex", alignItems: "start", marginBottom: "24px" }}>
+              <input type="checkbox" required style={{ marginTop: "4px", marginRight: "10px" }} />
+              <label style={{ fontSize: "13px", color: "#666", lineHeight: "1.5" }}>
+                I agree to the <a href="#" style={{ color: "#800020", textDecoration: "none", fontWeight: "500" }}>Terms of Service</a> and <a href="#" style={{ color: "#800020", textDecoration: "none", fontWeight: "500" }}>Privacy Policy</a>
+              </label>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              style={{ width: "100%", background: "linear-gradient(135deg, #800020 0%, #a0153e 100%)", color: "#d4af37", padding: "16px", borderRadius: "50px", fontSize: "14px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "2px", border: "2px solid #d4af37", cursor: loading ? "not-allowed" : "pointer", transition: "all 0.3s ease", opacity: loading ? 0.7 : 1 }}
+            >
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div style={{ position: "relative", margin: "30px 0" }}>
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center" }}>
+              <div style={{ width: "100%", borderTop: "1px solid #e8d5c4" }}></div>
+            </div>
+            <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
+              <span style={{ padding: "0 16px", backgroundColor: "white", color: "#999", fontSize: "13px" }}>Or sign up with</span>
+            </div>
+          </div>
+
+          {/* Social */}
+          <div style={{ display: "flex", justifyContent: "center", gap: "12px" }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              theme="outline"
+              size="large"
+              text="signup_with"
+              shape="rectangular"
+              width="400"
+            />
+          </div>
+        </div>
+
+        {/* Sign In Link */}
+        <p style={{ textAlign: "center", marginTop: "30px", color: "#666", fontSize: "15px" }}>
+          Already have an account?{" "}
+          <Link to="/login" style={{ color: "#800020", fontWeight: "600", textDecoration: "none" }}>Sign in</Link>
+        </p>
+      </div>
+    </div>
+  );
 }
