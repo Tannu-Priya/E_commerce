@@ -16,10 +16,8 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
-  credentials: true
-}));
+const FRONTEND_URLS = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : ['http://localhost:5173', 'http://localhost:5174'];
+app.use(cors({ origin: FRONTEND_URLS, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
