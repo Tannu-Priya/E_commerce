@@ -24,6 +24,7 @@ export default function Login() {
       console.log('Login API response:', data);
 
       if (data.token) {
+        localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data));
         // Determine redirect path
         const redirectPath = data.role === 'admin' ? '/admin' : '/products';
@@ -57,6 +58,7 @@ export default function Login() {
       const data = await response.json();
 
       if (data.token) {
+        localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data));
         const redirectPath = data.role === 'admin' ? '/admin' : '/products';
         navigate(redirectPath, { replace: true });
