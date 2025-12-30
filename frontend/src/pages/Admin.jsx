@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from './components/Toast';
 import { DollarSign, Package, Users, ShoppingBag, Clock, CheckCircle, AlertTriangle, Edit, Trash2, Plus, Image as ImageIcon } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = API_URL.replace('/api', '');
+
 export default function Admin() {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -70,10 +73,10 @@ export default function Admin() {
 
     setLoading(true);
     await Promise.allSettled([
-      fetchSafe('http://localhost:5000/api/admin/stats', setStats, 'stats'),
-      fetchSafe('http://localhost:5000/api/orders', setOrders, 'orders'),
-      fetchSafe('http://localhost:5000/api/admin/users', setUsers, 'users'),
-      fetchSafe('http://localhost:5000/api/products', setProducts, 'products')
+      fetchSafe(`${API_URL}/admin/stats`, setStats, 'stats'),
+      fetchSafe(`${API_URL}/orders`, setOrders, 'orders'),
+      fetchSafe(`${API_URL}/admin/users`, setUsers, 'users'),
+      fetchSafe(`${API_URL}/products`, setProducts, 'products')
     ]);
     setLoading(false);
   };
@@ -81,7 +84,7 @@ export default function Admin() {
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       const token = JSON.parse(localStorage.getItem('user')).token;
-      const response = await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+      const response = await fetch(`${API_URL}/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -131,8 +134,8 @@ export default function Admin() {
       }
 
       const url = editingProduct
-        ? `http://localhost:5000/api/products/${editingProduct._id}`
-        : 'http://localhost:5000/api/products';
+        ? `${API_URL}/products/${editingProduct._id}`
+        : `${API_URL}/products`;
 
       const productData = {
         ...productForm,
@@ -240,7 +243,7 @@ export default function Admin() {
 
         showToast('Uploading image...', 'info');
 
-        const response = await fetch('http://localhost:5000/api/upload', {
+        const response = await fetch(`${API_URL}/upload`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`
@@ -270,7 +273,7 @@ export default function Admin() {
 
     try {
       const token = JSON.parse(localStorage.getItem('user')).token;
-      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      const response = await fetch(`${API_URL}/products/${productId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -644,7 +647,7 @@ export default function Admin() {
                       <img
                         src={product.image.startsWith('http')
                           ? product.image
-                          : `http://localhost:5000${encodeURI(product.image)}`
+                          : `${BASE_URL}${encodeURI(product.image)}`
                         }
                         alt={product.name}
                         style={{

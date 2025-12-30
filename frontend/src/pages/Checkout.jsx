@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "./components/Toast";
 import { ShoppingCart, Image as ImageIcon } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = API_URL.replace('/api', '');
+
 export default function Checkout() {
   const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
   const { showToast } = useToast();
@@ -78,7 +81,7 @@ export default function Checkout() {
         totalPrice: total
       };
 
-      const response = await fetch('http://localhost:5000/api/orders', {
+      const response = await fetch(`${API_URL}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,10 +103,10 @@ export default function Checkout() {
           }
 
           // Fetch Razorpay Key
-          const { key } = await fetch('http://localhost:5000/api/config/razorpay').then((r) => r.json());
+          const { key } = await fetch(`${API_URL}/config/razorpay`).then((r) => r.json());
 
           // Create Order on Razorpay
-          const razorpayOrder = await fetch('http://localhost:5000/api/orders/razorpay', {
+          const razorpayOrder = await fetch(`${API_URL}/orders/razorpay`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -126,7 +129,7 @@ export default function Checkout() {
             handler: async function (response) {
               // Verify Payment
               try {
-                const payRes = await fetch(`http://localhost:5000/api/orders/${data._id}/pay`, {
+                const payRes = await fetch(`${API_URL}/orders/${data._id}/pay`, {
                   method: 'PUT',
                   headers: {
                     'Content-Type': 'application/json',
@@ -343,13 +346,13 @@ export default function Checkout() {
               <div key={item.id} style={{ backgroundColor: "white", borderRadius: "16px", padding: "24px", marginBottom: "20px", display: "flex", gap: "24px", boxShadow: "0 4px 20px rgba(0,0,0,0.08)" }}>
                 <div style={{ width: "120px", height: "120px", borderRadius: "12px", overflow: "hidden", backgroundColor: "#f5f5f5" }}>
                   {item.image ? (
-                    <img 
-                      src={item.image.startsWith('http') 
-                        ? item.image 
-                        : `http://localhost:5000${encodeURI(item.image)}`
-                      } 
-                      alt={item.name} 
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                    <img
+                      src={item.image.startsWith('http')
+                        ? item.image
+                        : `${BASE_URL}${encodeURI(item.image)}`
+                      }
+                      alt={item.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
                   ) : (
                     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#e8d5c4" }}><ImageIcon size={40} strokeWidth={1} /></div>

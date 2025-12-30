@@ -4,6 +4,9 @@ import { Check, X, Image as ImageIcon } from 'lucide-react';
 import { useCart } from "./components/context/CartContext";
 import api from "./components/context/services/api";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = API_URL.replace('/api', '');
+
 const sampleProducts = [
   { id: "s1", name: "Royal Silk Saree", price: 4999, category: "saree", description: "Elegant silk saree with intricate golden border and traditional motifs. Perfect for weddings and special occasions.", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500&h=700&fit=crop", sizes: ["Free Size"], colors: ["Maroon", "Gold", "Red"], material: "Pure Silk", care: "Dry clean only", stock: 15 },
   { id: "s2", name: "Banarasi Silk Saree", price: 5999, category: "saree", description: "Traditional Banarasi weave with rich embroidery and zari work. A timeless classic.", image: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=500&h=700&fit=crop", sizes: ["Free Size"], colors: ["Red", "Gold", "Pink"], material: "Banarasi Silk", care: "Dry clean only", stock: 12 },
@@ -35,7 +38,7 @@ export default function ProductDetail() {
       try {
         setLoading(true);
         // Try to get from API first
-        const response = await fetch(`http://localhost:5000/api/products/${id}`);
+        const response = await fetch(`${API_URL}/products/${id}`);
         if (response.ok) {
           const data = await response.json();
           setProduct(data);
@@ -106,13 +109,13 @@ export default function ProductDetail() {
           <div>
             <div style={{ borderRadius: "16px", overflow: "hidden", marginBottom: "20px", backgroundColor: "#f5f5f5" }}>
               {product.image ? (
-                <img 
-                  src={product.image.startsWith('http') 
-                    ? product.image 
-                    : `http://localhost:5000${encodeURI(product.image)}`
-                  } 
-                  alt={product.name} 
-                  style={{ width: "100%", height: "600px", objectFit: "cover" }} 
+                <img
+                  src={product.image.startsWith('http')
+                    ? product.image
+                    : `${BASE_URL}${encodeURI(product.image)}`
+                  }
+                  alt={product.name}
+                  style={{ width: "100%", height: "600px", objectFit: "cover" }}
                 />
               ) : (
                 <div style={{ width: "100%", height: "600px", display: "flex", alignItems: "center", justifyContent: "center", color: "#e8d5c4" }}><ImageIcon size={120} strokeWidth={1} /></div>

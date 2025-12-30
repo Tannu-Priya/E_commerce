@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Shirt, Layers, Star, Truck, ShieldCheck, RefreshCw } from 'lucide-react';
 import video from "../assets/Promotional_Video_for_Thread_Story.mp4";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = API_URL.replace('/api', '');
+
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +17,7 @@ export default function Home() {
 
   const fetchFeaturedProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/products');
+      const response = await fetch(`${API_URL}/products`);
       const data = await response.json();
       // Get first 4 products as featured
       setFeaturedProducts(data.slice(0, 4));
@@ -30,39 +33,39 @@ export default function Home() {
     <div style={{ position: 'relative', zIndex: 3 }}>
       {/* Hero Section */}
       <div style={{
-  position: 'relative',
-  padding: '120px 2rem 80px',
-  textAlign: 'center',
-  color: 'white',
-  overflow: 'hidden'
-}}>
+        position: 'relative',
+        padding: '120px 2rem 80px',
+        textAlign: 'center',
+        color: 'white',
+        overflow: 'hidden'
+      }}>
 
 
-{/* Background Video */}
-<video
-  src={video}
-  autoPlay
-  loop
-  muted
-  playsInline
-  style={{
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    zIndex: 1
-  }}
-/>
+        {/* Background Video */}
+        <video
+          src={video}
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 1
+          }}
+        />
 
-{/* Dark Overlay */}
-<div style={{
-  position: 'absolute',
-  inset: 0,
-  //background: 'linear-gradient(135deg, rgba(128,0,32,0.7), rgba(179,0,0,0.7))',
-  zIndex: 2
-}} />
+        {/* Dark Overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          //background: 'linear-gradient(135deg, rgba(128,0,32,0.7), rgba(179,0,0,0.7))',
+          zIndex: 2
+        }} />
 
 
 
@@ -256,9 +259,9 @@ export default function Home() {
                   }}>
                     <img
                       src={product.image && product.image !== '/images/products/default.jpg'
-                        ? product.image.startsWith('http') 
-                          ? product.image 
-                          : `http://localhost:5000${encodeURI(product.image)}`
+                        ? product.image.startsWith('http')
+                          ? product.image
+                          : `${BASE_URL}${encodeURI(product.image)}`
                         : 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500&h=700&fit=crop'
                       }
                       alt={product.name}

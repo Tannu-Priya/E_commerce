@@ -4,6 +4,9 @@ import { useCart } from './components/context/CartContext';
 import { useToast } from './components/Toast';
 import { Heart, X, ShoppingBag, ShoppingCart } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = API_URL.replace('/api', '');
+
 export default function Wishlist() {
   const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
@@ -215,9 +218,9 @@ export default function Wishlist() {
               >
                 {product.image && product.image !== '/images/products/default.jpg' ? (
                   <img
-                    src={product.image.startsWith('http') 
-                      ? product.image 
-                      : `http://localhost:5000${encodeURI(product.image)}`
+                    src={product.image.startsWith('http')
+                      ? product.image
+                      : `${BASE_URL}${encodeURI(product.image)}`
                     }
                     alt={product.name}
                     style={{

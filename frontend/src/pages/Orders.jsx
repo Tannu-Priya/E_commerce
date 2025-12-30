@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, Truck, Settings, Clock, X, Package, ShoppingBag, Mail, Phone } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 export default function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export default function Orders() {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/orders/myorders', {
+      const response = await fetch(`${API_URL}/orders/myorders`, {
         headers: {
           Authorization: `Bearer ${user.token}`
         }

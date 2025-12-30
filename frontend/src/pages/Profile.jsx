@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from './components/Toast';
 import { User, Package, Lock, Edit2, Save, X, ShoppingBag, Crown } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
@@ -32,7 +34,7 @@ export default function Profile() {
 
   const fetchOrders = async (token) => {
     try {
-      const response = await fetch('http://localhost:5000/api/orders/myorders', {
+      const response = await fetch(`${API_URL}/orders/myorders`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await response.json();
@@ -47,7 +49,7 @@ export default function Profile() {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/auth/profile', {
+      const response = await fetch(`${API_URL}/auth/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -81,7 +83,7 @@ export default function Profile() {
       return;
     }
     try {
-      const response = await fetch('http://localhost:5000/api/auth/change-password', {
+      const response = await fetch(`${API_URL}/auth/change-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -4,6 +4,8 @@ import { GoogleLogin } from "@react-oauth/google";
 import api from "./components/context/services/api";
 //import ThreeBackground from "./ThreeBackground";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -46,7 +48,7 @@ export default function Login() {
       setLoading(true);
       setError("");
 
-      const response = await fetch('http://localhost:5000/api/auth/google', {
+      const response = await fetch(`${API_URL}/auth/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credential: credentialResponse.credential })

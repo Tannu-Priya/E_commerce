@@ -5,6 +5,9 @@ import { useWishlist } from "./components/context/WishlistContext";
 import { useCart } from "./components/context/CartContext";
 import { useToast } from "./components/Toast";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = API_URL.replace('/api', '');
+
 const ProductCard = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [added, setAdded] = useState(false);
@@ -48,9 +51,9 @@ const ProductCard = ({ product }) => {
       <div style={{ position: "relative", overflow: "hidden", paddingTop: "120%", backgroundColor: "#faf8f5" }}>
         <img
           src={product.image && product.image !== '/images/products/default.jpg'
-            ? product.image.startsWith('http') 
-              ? product.image 
-              : `http://localhost:5000${encodeURI(product.image)}`
+            ? product.image.startsWith('http')
+              ? product.image
+              : `${BASE_URL}${encodeURI(product.image)}`
             : 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500&h=700&fit=crop'
           }
           alt={product.name}
@@ -266,7 +269,7 @@ export default function Products() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch(`${API_URL}/products`);
         const data = await response.json();
         setProducts(data);
       } catch (err) {

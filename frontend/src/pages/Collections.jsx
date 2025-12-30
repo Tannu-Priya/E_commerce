@@ -13,6 +13,9 @@ import {
   ShoppingCart
 } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = API_URL.replace('/api', '');
+
 export default function Collections() {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -46,7 +49,7 @@ export default function Collections() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/products');
+      const response = await fetch(`${API_URL}/products`);
       const data = await response.json();
       setProducts(data);
     } catch (error) {
@@ -352,10 +355,10 @@ export default function Collections() {
                 {/* Image */}
                 <div style={{ position: 'relative', height: '300px', overflow: 'hidden' }}>
                   <img
-                    src={product.image 
-                      ? product.image.startsWith('http') 
-                        ? product.image 
-                        : `http://localhost:5000${encodeURI(product.image)}`
+                    src={product.image
+                      ? product.image.startsWith('http')
+                        ? product.image
+                        : `${BASE_URL}${encodeURI(product.image)}`
                       : 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500&h=700&fit=crop'
                     }
                     alt={product.name}

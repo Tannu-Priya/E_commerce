@@ -1,0 +1,9 @@
+PORT=5000
+# I have formatted your URI correctly below (encoded the @ in the password and removed brackets)
+MONGODB_URI=mongodb+srv://admin:admin%401234@cluster0.tihls1d.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0
+JWT_SECRET=replace_with_a_secure_random_string
+FRONTEND_URL=http://localhost:5173
+# Add these if you have them, otherwise leave blank
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+GOOGLE_CLIENT_ID=
